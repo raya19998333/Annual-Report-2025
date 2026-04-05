@@ -1,0 +1,3562 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nama Dhofar - Annual Report Dashboard 2025</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        /* ── RESET ── */
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        /* ── TOKENS ── */
+        :root {
+            --primary:       #744379;
+            --primary-dark:  #5a3460;
+            --primary-mid:   #8b5a92;
+            --primary-light: #b08ab8;
+            --primary-glow:  rgba(116,67,121,0.35);
+            --primary-ultra: rgba(116,67,121,0.08);
+
+            --glass-bg:      rgba(255,255,255,0.06);
+            --glass-border:  rgba(255,255,255,0.12);
+            --glass-hover:   rgba(255,255,255,0.11);
+            --glass-active:  rgba(255,255,255,0.16);
+
+            --body-bg:       #0f0a14;
+            --surface:       rgba(255,255,255,0.04);
+            --surface-raised:rgba(255,255,255,0.07);
+
+            --text-primary:  rgba(255,255,255,0.92);
+            --text-secondary:rgba(255,255,255,0.45);
+            --text-muted:    rgba(255,255,255,0.28);
+
+            /* card / main area tokens (light) */
+            --card-bg:       rgba(255,255,255,0.72);
+            --card-border:   rgba(116,67,121,0.12);
+            --card-shadow:   0 2px 20px rgba(116,67,121,0.08);
+            --card-hover-shadow: 0 8px 40px rgba(116,67,121,0.18);
+
+            --main-text:     #1c1428;
+            --main-muted:    #7a6d84;
+            --main-subtle:   #b5aabe;
+            --main-bg:       #f4f0f8;
+            --main-surface:  #ffffff;
+            --main-border:   rgba(116,67,121,0.1);
+
+            --success:  #22c898;
+            --warning:  #f0a500;
+            --danger:   #f25e5e;
+
+            --sidebar-width: 256px;
+            --header-height: 64px;
+
+            --radius-sm:  8px;
+            --radius-md:  12px;
+            --radius-lg:  18px;
+            --radius-xl:  24px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            font-weight: 400;
+            background: var(--body-bg);
+            color: var(--main-text);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* ════════════════════════════════════════
+           SIDEBAR  –  Dark glass
+        ════════════════════════════════════════ */
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            width: var(--sidebar-width);
+            background:
+                linear-gradient(180deg,
+                    rgba(90,52,96,0.96)  0%,
+                    rgba(60,28,70,0.98) 60%,
+                    rgba(30,10,40,0.99) 100%);
+            backdrop-filter: blur(24px) saturate(160%);
+            -webkit-backdrop-filter: blur(24px) saturate(160%);
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        /* subtle radial glow top-left */
+        .sidebar::after {
+            content:'';
+            position:absolute;
+            top:-80px; left:-80px;
+            width:320px; height:320px;
+            background: radial-gradient(circle, rgba(116,67,121,0.4) 0%, transparent 70%);
+            pointer-events:none;
+        }
+
+        /* ── Brand ── */
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 24px 20px 18px;
+            text-decoration: none;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--glass-border);
+            position: relative;
+            z-index: 1;
+        }
+
+        .sidebar-brand img {
+            width: 38px; height: 38px;
+            border-radius: var(--radius-sm);
+            background: var(--glass-active);
+            padding: 6px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .sidebar-brand-text { display:flex; flex-direction:column; gap:1px; }
+
+        .sidebar-brand-name {
+            font-family: 'Sora', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .sidebar-brand-sub {
+            font-size: 0.62rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        /* ── Nav section label ── */
+        .nav-section-label {
+            font-size: 0.58rem;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 18px 20px 6px;
+            position: relative;
+            z-index:1;
+        }
+
+        /* ── Nav list ── */
+        .nav-menu {
+            list-style: none;
+            padding: 0 10px;
+            position: relative;
+            z-index:1;
+        }
+
+        .nav-item { margin-bottom: 1px; }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 400;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.18s, color 0.18s;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .nav-link:hover {
+            background: var(--glass-hover);
+            color: rgba(255,255,255,0.80);
+        }
+
+        .nav-link.active {
+            background: var(--glass-active);
+            color: #fff;
+            font-weight: 500;
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--glass-border);
+        }
+
+        /* pill indicator */
+        .nav-link.active .nav-icon {
+            color: #d8b8dc;
+        }
+
+        .nav-icon {
+            font-size: 0.82rem;
+            width: 16px;
+            text-align: center;
+            flex-shrink: 0;
+            color: inherit;
+            opacity: 0.7;
+        }
+
+        .nav-link.active .nav-icon { opacity: 1; }
+
+        /* ── Sidebar footer ── */
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 14px 20px 20px;
+            border-top: 1px solid var(--glass-border);
+            position: relative;
+            z-index:1;
+        }
+
+        .sidebar-year-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 400;
+            backdrop-filter: blur(8px);
+        }
+
+        /* ── Scrollbar inside sidebar ── */
+        .sidebar { overflow-y: auto; }
+        .sidebar::-webkit-scrollbar { width: 3px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+        /* ════════════════════════════════════════
+           HEADER  –  Frosted glass
+        ════════════════════════════════════════ */
+        .header {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: var(--header-height);
+            background: rgba(244,240,248,0.82);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(116,67,121,0.1);
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 999;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.6);
+            border: 1px solid rgba(116,67,121,0.12);
+            border-radius: var(--radius-md);
+            backdrop-filter: blur(8px);
+            transition: all 0.2s;
+        }
+        .search-box:focus-within {
+            background: rgba(255,255,255,0.9);
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(116,67,121,0.1);
+        }
+        .search-box input {
+            background: none;
+            border: none;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 400;
+            color: var(--main-text);
+            width: 200px;
+        }
+        .search-box input::placeholder { color: var(--main-subtle); }
+        .search-icon { color: var(--main-subtle); font-size: 0.78rem; }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-btn {
+            width: 36px; height: 36px;
+            border-radius: var(--radius-sm);
+            background: rgba(255,255,255,0.55);
+            border: 1px solid rgba(116,67,121,0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            color: var(--main-muted);
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            position: relative;
+            backdrop-filter: blur(8px);
+        }
+        .header-btn:hover {
+            background: white;
+            color: var(--primary);
+            border-color: rgba(116,67,121,0.2);
+        }
+        .notif-dot {
+            position: absolute;
+            top: 7px; right: 7px;
+            width: 6px; height: 6px;
+            background: var(--danger);
+            border-radius: 50%;
+            border: 1.5px solid var(--main-bg);
+        }
+
+        .year-select {
+            padding: 7px 12px;
+            border: 1px solid rgba(116,67,121,0.14);
+            border-radius: var(--radius-sm);
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--main-text);
+            outline: none;
+        }
+        .year-select:focus { border-color: var(--primary-light); }
+
+        .divider-v {
+            width: 1px; height: 24px;
+            background: rgba(116,67,121,0.12);
+        }
+
+        .user-profile {
+            display: flex; align-items: center; gap: 9px;
+            cursor: pointer;
+            padding: 5px 9px;
+            border-radius: var(--radius-sm);
+            transition: background 0.2s;
+        }
+        .user-profile:hover { background: rgba(255,255,255,0.6); }
+
+        .user-avatar {
+            width: 34px; height: 34px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--primary), var(--primary-mid));
+            display: flex; align-items: center; justify-content: center;
+            color: white;
+            font-family: 'Sora', sans-serif;
+            font-weight: 600;
+            font-size: 0.72rem;
+            flex-shrink: 0;
+        }
+
+        .user-name {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--main-text);
+            white-space: nowrap;
+        }
+        .user-role {
+            font-size: 0.68rem;
+            font-weight: 400;
+            color: var(--main-subtle);
+        }
+
+        /* ════════════════════════════════════════
+           MAIN CONTENT AREA
+        ════════════════════════════════════════ */
+        .main {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--header-height);
+            padding: 32px 36px;
+            min-height: calc(100vh - var(--header-height));
+            background: var(--main-bg);
+        }
+
+        /* ── Page header ── */
+        .page-header {
+            margin-bottom: 28px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .page-header-left { flex: 1; }
+
+        .page-eyebrow {
+            font-size: 0.66rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--primary-light);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .page-eyebrow::before {
+            content:'';
+            width: 16px; height: 1.5px;
+            background: var(--primary-light);
+            border-radius: 2px;
+        }
+
+        .page-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--main-text);
+            letter-spacing: -0.025em;
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+
+        .page-subtitle {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--main-subtle);
+        }
+
+        .page-date-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(116,67,121,0.07);
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            border: 1px solid rgba(116,67,121,0.14);
+            white-space: nowrap;
+        }
+
+        /* ── Transitions ── */
+        .page-content { display: none; }
+        .page-content.active {
+            display: block;
+            animation: fadeUp 0.35s ease;
+        }
+        @keyframes fadeUp {
+            from { opacity:0; transform: translateY(12px); }
+            to   { opacity:1; transform: translateY(0); }
+        }
+
+        /* ════════════════════════════════════════
+           KPI CARDS
+        ════════════════════════════════════════ */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .kpi-card {
+            background: rgba(255,255,255,0.78);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-hover-shadow);
+            border-color: rgba(116,67,121,0.22);
+        }
+
+        .kpi-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px 20px 12px;
+        }
+        .kpi-card-bottom { padding: 0 20px 16px; }
+
+        .kpi-icon-wrap {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            background: rgba(116,67,121,0.08);
+            border: 1px solid rgba(116,67,121,0.1);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .kpi-icon { font-size: 1rem; color: var(--primary); }
+
+        .kpi-label {
+            font-size: 0.68rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--main-subtle);
+            margin-bottom: 5px;
+        }
+        .kpi-number {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--main-text);
+            letter-spacing: -0.03em;
+            line-height: 1;
+        }
+        .kpi-change {
+            font-size: 0.72rem;
+            font-weight: 500;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .kpi-change.positive { color: var(--success); }
+        .kpi-change.negative { color: var(--danger); }
+
+        .kpi-bar {
+            height: 2px;
+            background: rgba(116,67,121,0.08);
+            margin-top: auto;
+        }
+        .kpi-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        }
+
+        /* ════════════════════════════════════════
+           WIDGETS
+        ════════════════════════════════════════ */
+        .widgets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .widget {
+            background: rgba(255,255,255,0.78);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--card-shadow);
+            padding: 22px;
+            transition: box-shadow 0.2s;
+        }
+        .widget:hover { box-shadow: var(--card-hover-shadow); }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(116,67,121,0.07);
+        }
+        .widget-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--main-text);
+        }
+        .widget-badge {
+            font-size: 0.64rem;
+            font-weight: 500;
+            color: var(--primary);
+            background: rgba(116,67,121,0.07);
+            border: 1px solid rgba(116,67,121,0.1);
+            padding: 3px 9px;
+            border-radius: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 260px;
+            margin-bottom: 14px;
+        }
+
+        /* ════════════════════════════════════════
+           CONTENT SECTIONS
+        ════════════════════════════════════════ */
+        .content-section {
+            background: rgba(255,255,255,0.78);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 14px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .content-section h3 {
+            font-family: 'Sora', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--main-text);
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(116,67,121,0.08);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .content-section h3::before {
+            content:'';
+            width: 3px; height: 16px;
+            background: linear-gradient(180deg, var(--primary), var(--primary-light));
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .content-section p {
+            font-size: 0.84rem;
+            font-weight: 400;
+            color: var(--main-muted);
+            line-height: 1.75;
+            margin-bottom: 10px;
+        }
+
+        /* ════════════════════════════════════════
+           STATS GRID
+        ════════════════════════════════════════ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-item {
+            padding: 16px;
+            background: rgba(116,67,121,0.04);
+            border: 1px solid rgba(116,67,121,0.08);
+            border-radius: var(--radius-md);
+            border-left: 3px solid var(--primary);
+            transition: background 0.18s, border-color 0.18s;
+        }
+        .stat-item:hover {
+            background: rgba(116,67,121,0.07);
+        }
+
+        .stat-label {
+            font-size: 0.66rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--main-subtle);
+            margin-bottom: 6px;
+        }
+        .stat-value {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.02em;
+        }
+        .stat-unit {
+            font-size: 0.74rem;
+            font-weight: 400;
+            color: var(--main-subtle);
+            margin-left: 2px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ════════════════════════════════════════
+           TABLES
+        ════════════════════════════════════════ */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(116,67,121,0.09);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        thead { background: rgba(116,67,121,0.04); }
+        th {
+            padding: 11px 16px;
+            text-align: left;
+            font-size: 0.64rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--main-subtle);
+            border-bottom: 1px solid rgba(116,67,121,0.08);
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(116,67,121,0.05);
+            color: var(--main-text);
+            font-weight: 400;
+        }
+        td strong { font-weight: 500; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: rgba(116,67,121,0.03); }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.66rem;
+            font-weight: 500;
+        }
+        .badge-success {
+            background: rgba(34,200,152,0.1);
+            color: var(--success);
+        }
+        .badge-success::before {
+            content:'';
+            width: 4px; height: 4px;
+            background: var(--success);
+            border-radius: 50%;
+        }
+        .badge-warning {
+            background: rgba(240,165,0,0.1);
+            color: var(--warning);
+        }
+
+        /* ════════════════════════════════════════
+           RESPONSIVE
+        ════════════════════════════════════════ */
+        @media (max-width: 1024px) {
+            :root { --sidebar-width: 230px; }
+        }
+        @media (max-width: 768px) {
+            :root { --sidebar-width: 210px; }
+            .header { padding: 0 18px; }
+            .main { padding: 18px; }
+            .search-box input { width: 120px; }
+            .kpi-grid, .widgets-grid { grid-template-columns: 1fr; }
+            .page-title { font-size: 1.4rem; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ambient mesh -->
+    <div style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;">
+        <div style="position:absolute;top:-200px;left:50px;width:600px;height:600px;background:radial-gradient(circle,rgba(116,67,121,0.18) 0%,transparent 65%);border-radius:50%;"></div>
+        <div style="position:absolute;bottom:-150px;right:100px;width:500px;height:500px;background:radial-gradient(circle,rgba(99,102,241,0.1) 0%,transparent 65%);border-radius:50%;"></div>
+    </div>
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <a href="#" class="sidebar-brand" onclick="showPage('dashboard')">
+            <img src="https://i.postimg.cc/0Njcq3Yd/image-144.png" alt="Logo">
+            <div class="sidebar-brand-text">
+                <span class="sidebar-brand-name">Nama Dhofar</span>
+                <span class="sidebar-brand-sub">Annual Report 2025</span>
+            </div>
+        </a>
+
+        <div class="nav-section-label">Main</div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a class="nav-link active" onclick="showPage('dashboard')">
+                    <i class="fas fa-chart-line nav-icon"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showPage('about')">
+                    <i class="fas fa-building nav-icon"></i> About Company
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showPage('strategic')">
+                    <i class="fas fa-bullseye nav-icon"></i> Strategic Planning
+                </a>
+            </li>
+        </ul>
+
+        <div class="nav-section-label">Operations</div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a class="nav-link" onclick="showPage('hse')">
+                    <i class="fas fa-shield-alt nav-icon"></i> Health & Safety
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showPage('customer')">
+                    <i class="fas fa-users nav-icon"></i> Customer Service
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showPage('hr')">
+                    <i class="fas fa-briefcase nav-icon"></i> Human Resources
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showPage('operational')">
+                    <i class="fas fa-chart-bar nav-icon"></i> Operational
+                </a>
+            </li>
+        </ul>
+
+        <div class="nav-section-label">Finance & Assets</div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a class="nav-link" onclick="showPage('financial')">
+                    <i class="fas fa-dollar-sign nav-icon"></i> Financial
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showPage('sectors')">
+                    <i class="fas fa-bolt nav-icon"></i> Sectors
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showPage('planning')">
+                    <i class="fas fa-clipboard-list nav-icon"></i> Planning & Assets
+                </a>
+            </li>
+        </ul>
+
+        <div class="nav-section-label">Governance</div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a class="nav-link" onclick="showPage('risk')">
+                    <i class="fas fa-lock nav-icon"></i> Risk Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showPage('rdi')">
+                    <i class="fas fa-rocket nav-icon"></i> R&D Innovation
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showPage('icv')">
+                    <i class="fas fa-globe nav-icon"></i> In-Country Value
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <span class="sidebar-year-badge">
+                <i class="fas fa-calendar-check"></i> FY 2025
+            </span>
+        </div>
+    </aside>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="header-left">
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search reports, metrics...">
+            </div>
+        </div>
+
+        <div class="header-right">
+            <button class="header-btn">
+                <i class="fas fa-bell"></i>
+                <span class="notif-dot"></span>
+            </button>
+            <button class="header-btn">
+                <i class="fas fa-download"></i>
+            </button>
+
+            <div class="divider-v"></div>
+
+            <select class="year-select">
+                <option>2025</option>
+                <option>2024</option>
+                <option>2023</option>
+            </select>
+
+            <div class="divider-v"></div>
+
+            <div class="user-profile">
+                <div class="user-avatar">HA</div>
+                <div>
+                    <div class="user-name">Hamid Al Ibrahim</div>
+                    <div class="user-role">General Manager Planning</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main">
+        <!-- DASHBOARD PAGE -->
+        <div id="dashboard" class="page-content active">
+            <div class="page-header">
+                <div class="page-header-left">
+                    <div class="page-eyebrow">Annual Report</div>
+                    <h1 class="page-title">Dashboard 2025</h1>
+                    <p class="page-subtitle">Nama Dhofar Services — Performance Overview</p>
+                </div>
+                <span class="page-date-badge"><i class="fas fa-circle-check"></i> Fiscal Year 2025</span>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Revenue</div>
+                            <div class="kpi-number">RO 246M</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-wallet kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> +5.0% from 2024</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:78%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Net Profit</div>
+                            <div class="kpi-number">RO 23M</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-chart-line kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> +360% YoY</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:95%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Customers</div>
+                            <div class="kpi-number">316K+</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-users-cog kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> +3.2% growth</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:62%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">LTI-Free Hours</div>
+                            <div class="kpi-number">31M+</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-check-circle kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-shield-halved"></i> Zero Fatalities</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:100%"></div></div>
+                </div>
+            </div>
+
+            <div class="widgets-grid">
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Revenue Trend</div>
+                        <span class="widget-badge">2023–2025</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">2024</div>
+                            <div class="stat-value">235<span class="stat-unit">M</span></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">2025</div>
+                            <div class="stat-value">246<span class="stat-unit">M</span></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Growth</div>
+                            <div class="stat-value">5<span class="stat-unit">%</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Key Metrics</div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Uptime</div>
+                            <div class="stat-value">99.8<span class="stat-unit">%</span></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Compliance</div>
+                            <div class="stat-value">99.7<span class="stat-unit">%</span></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Satisfaction</div>
+                            <div class="stat-value">79<span class="stat-unit">%</span></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Omanization</div>
+                            <div class="stat-value">97<span class="stat-unit">%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-title">Operational Summary 2025</div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Sector</th>
+                                <th>Customers</th>
+                                <th>Production</th>
+                                <th>Status</th>
+                                <th>Growth</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Electricity</strong></td>
+                                <td>250,000+</td>
+                                <td>8,500 GWh</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td style="color: var(--success);">↑ 2.3%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Water</strong></td>
+                                <td>180,000+</td>
+                                <td>76.17M m³</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td style="color: var(--success);">↑ 3.0%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Wastewater</strong></td>
+                                <td>61,719</td>
+                                <td>23.24M m³</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td style="color: var(--success);">↑ 2.1%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABOUT PAGE -->
+        <div id="about" class="page-content">
+            <div class="page-header">
+                <div class="page-header-left">
+                    <div class="page-eyebrow">Company Profile</div>
+                    <h1 class="page-title">About the Company</h1>
+                    <p class="page-subtitle">Nama Dhofar Services — Company Overview</p>
+                </div>
+                <span class="page-date-badge"><i class="fas fa-building"></i> Est. 2001</span>
+            </div>
+
+            <div class="content-section">
+                <h3>Company Overview</h3>
+                <p>Dhofar Integrated Services Company S.A.O.C, re-branded as Nama Dhofar Services (NDS), was incorporated in 2001 and is owned by Electricity Holding Company (Nama Holding) by 99%, a fully owned subsidiary of Oman Investment Authority (OIA).</p>
+                <p>NDS is mandated to provide Electricity Distribution and Supply, Water and Wastewater Services in Dhofar Governorate. The company handles above 0.3 million customer accounts across the three sectors.</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Established</div>
+                            <div class="kpi-number">2001</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-calendar kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:100%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Customer Accounts</div>
+                            <div class="kpi-number">316K+</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-user-check kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:75%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Wilayats Served</div>
+                            <div class="kpi-number">10</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-map-location-dot kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:100%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Employees</div>
+                            <div class="kpi-number">596</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-people-group kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:60%"></div></div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Key Responsibilities</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Coverage</th>
+                                <th>Customers</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Electricity</strong></td>
+                                <td>Dhofar Governorate</td>
+                                <td>250,000+</td>
+                                <td>Distribution & Supply</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Water</strong></td>
+                                <td>All 10 Wilayats</td>
+                                <td>180,000+</td>
+                                <td>Supply & Distribution</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Wastewater</strong></td>
+                                <td>Throughout Region</td>
+                                <td>61,719</td>
+                                <td>Treatment & Management</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- STRATEGIC PAGE -->
+        <div id="strategic" class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Strategic Business Planning</h1>
+                <p class="page-subtitle">Vision, Mission & Strategic Objectives</p>
+            </div>
+
+            <div class="content-section">
+                <h3>Vision 2040</h3>
+                <p><strong>Sustainable Services, Prosperous Community</strong></p>
+                <p>To be the leading integrated utility company in the region, providing sustainable services that create prosperous communities and shape a brighter future.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>Mission</h3>
+                <p>To provide our customers with safe, reliable, sustainable, and trusted integrated utility services through our dedicated staff, intelligent solutions, and trusted partnerships.</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Capital Investment</div>
+                            <div class="kpi-number">RO 135.7M</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-piggy-bank kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> 2025-2029</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Electricity</div>
+                            <div class="kpi-number">RO 72.7M</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-bolt kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Network Enhancement</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Water & Wastewater</div>
+                            <div class="kpi-number">RO 63M</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-water kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Infrastructure</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Strategic Values</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Respect</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Respecting all stakeholders and environment</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Integrity</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Operating with transparency and ethics</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Professionalism</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Delivering excellence through expertise</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Creativity</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Fostering innovation and solutions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HSE PAGE -->
+        <div id="hse" class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Health, Safety & Environment</h1>
+                <p class="page-subtitle">HSE Performance & Achievements</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">LTI-Free Hours</div>
+                            <div class="kpi-number">31M+</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-heart-pulse kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Since Sept 2018</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Fatalities</div>
+                            <div class="kpi-number">ZERO</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-check-double kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> 2025 Achievement</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Environmental</div>
+                            <div class="kpi-number">99.7%</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-leaf kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Compliance Rate</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Certifications</div>
+                            <div class="kpi-number">ISO 45001</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-certificate kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> & ISO 14001</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>HSE Management System</h3>
+                <p>NDS operates a comprehensive HSE Management System aligned with ISO 45001:2018 and ISO 14001:2015, ensuring proactive risk management and sustainable operations.</p>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Zero Lost Time Injuries</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Sustained since September 2018</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Employee Wellness</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Comprehensive health programs</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Environmental</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">100% compliance standards</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Continuous</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Improvement initiatives</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CUSTOMER PAGE -->
+        <div id="customer" class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Customer Service Excellence</h1>
+                <p class="page-subtitle">Service Quality & Digital Transformation</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Satisfaction</div>
+                            <div class="kpi-number">79%</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-star kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> ↑ +4% YoY</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Complaints Resolved</div>
+                            <div class="kpi-number">97%</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-thumbs-up kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Handling Rate</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">E-Payments</div>
+                            <div class="kpi-number">57%</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-credit-card kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Digital Adoption</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Digital Followers</div>
+                            <div class="kpi-number">28K+</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-share-nodes kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Social Media</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Digital Services & Channels</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Mobile App</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Trial mode launched 2025</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Website Visits</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">287,000+ visits annually</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Chatbot Support</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">24/7 instant assistance</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Social Posts</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">690 posts + 24 videos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HR PAGE -->
+        <div id="hr" class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Human Resources & Development</h1>
+                <p class="page-subtitle">Workforce & Development Initiatives</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Total Employees</div>
+                            <div class="kpi-number">596</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">👥</div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Full-time Staff</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Omanization</div>
+                            <div class="kpi-number">97%</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">🇴🇲</div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> National Workforce</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">New Jobs</div>
+                            <div class="kpi-number">467</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">📈</div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> 2025 Opportunities</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Employee Satisfaction</div>
+                            <div class="kpi-number">95%</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">😊</div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Engagement Rate</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>HR Initiatives 2025</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Takween Program</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Leadership development initiative</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Omanisation</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">467 new employment opportunities</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Learning</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Targeted training programs</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Engagement</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Wellness & recognition</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FINANCIAL PAGE -->
+        <div id="financial" class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Financial Performance</h1>
+                <p class="page-subtitle">Financial Results & Analysis 2025</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">2025 Revenue</div>
+                            <div class="kpi-number">RO 246M</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-wallet kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> ↑ +5%</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Net Profit</div>
+                            <div class="kpi-number">RO 23M</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-chart-line kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> ↑ +360%</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Total Assets</div>
+                            <div class="kpi-number">RO 721M</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-building kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> ↑ +9%</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Credit Rating</div>
+                            <div class="kpi-number">Ba1</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-star kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Stable</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+            </div>
+
+            <div class="widgets-grid">
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Revenue & Profit Trend (3 Years)</div>
+                    </div>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="financialChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Revenue Composition 2025</div>
+                    </div>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="financialPieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <div class="widget-header">
+                    <div class="widget-title">Financial Summary (RO Million)</div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>2023</th>
+                                <th>2024</th>
+                                <th>2025</th>
+                                <th>Change %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Revenue</strong></td>
+                                <td>220</td>
+                                <td>235</td>
+                                <td>247</td>
+                                <td style="color: var(--success);">+5%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Operating Profit</strong></td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>17</td>
+                                <td style="color: var(--success);">+140%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Net Profit</strong></td>
+                                <td>3</td>
+                                <td>5</td>
+                                <td>14</td>
+                                <td style="color: var(--success);">+175%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Assets</strong></td>
+                                <td>620</td>
+                                <td>662</td>
+                                <td>721</td>
+                                <td style="color: var(--success);">+9%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Equity</strong></td>
+                                <td>195</td>
+                                <td>212</td>
+                                <td>229</td>
+                                <td style="color: var(--success);">+8%</td>
+                            </tr>
+                            <tr style="background: rgba(116,67,121,0.03);">
+                                <td><strong>Net Debt</strong></td>
+                                <td>185</td>
+                                <td>205</td>
+                                <td>264</td>
+                                <td style="color: var(--danger);">+29%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <div class="widget-header">
+                    <div class="widget-title">Income Statement 2025 vs 2024 (RO Thousand)</div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>2025</th>
+                                <th>2024</th>
+                                <th>Variance</th>
+                                <th>% Change</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Revenue</strong></td>
+                                <td>247,014</td>
+                                <td>234,625</td>
+                                <td style="color: var(--success);">+12,389</td>
+                                <td style="color: var(--success);">+5.3%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Operating Costs</strong></td>
+                                <td>(194,798)</td>
+                                <td>(187,401)</td>
+                                <td style="color: var(--danger);">(7,397)</td>
+                                <td style="color: var(--danger);">+3.9%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Gross Profit</strong></td>
+                                <td>52,216</td>
+                                <td>47,224</td>
+                                <td style="color: var(--success);">+4,992</td>
+                                <td style="color: var(--success);">+10.6%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>G&A Expenses</strong></td>
+                                <td>(27,641)</td>
+                                <td>(25,010)</td>
+                                <td style="color: var(--danger);">(2,631)</td>
+                                <td style="color: var(--danger);">+10.5%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Allowance for ECL</strong></td>
+                                <td>(8,072)</td>
+                                <td>(1,877)</td>
+                                <td style="color: var(--danger);">(6,195)</td>
+                                <td style="color: var(--danger);">+329.6%</td>
+                            </tr>
+                            <tr style="background: rgba(116,67,121,0.03);">
+                                <td><strong>Operating Profit</strong></td>
+                                <td>16,503</td>
+                                <td>6,880</td>
+                                <td style="color: var(--success);">+9,623</td>
+                                <td style="color: var(--success);">+139.8%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Government Subsidy</strong></td>
+                                <td>17,241</td>
+                                <td>16,947</td>
+                                <td style="color: var(--success);">+294</td>
+                                <td style="color: var(--success);">+1.7%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Finance Costs</strong></td>
+                                <td>(17,762)</td>
+                                <td>(16,849)</td>
+                                <td style="color: var(--danger);">(913)</td>
+                                <td style="color: var(--danger);">+5.4%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Profit Before Tax</strong></td>
+                                <td>17,339</td>
+                                <td>7,499</td>
+                                <td style="color: var(--success);">+9,840</td>
+                                <td style="color: var(--success);">+131.2%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Taxation</strong></td>
+                                <td>(3,007)</td>
+                                <td>(2,286)</td>
+                                <td style="color: var(--danger);">(721)</td>
+                                <td style="color: var(--danger);">+31.5%</td>
+                            </tr>
+                            <tr style="background: var(--primary); color: rgba(255,255,255,0.95);">
+                                <td><strong>Profit for the Year</strong></td>
+                                <td><strong>14,332</strong></td>
+                                <td><strong>5,213</strong></td>
+                                <td><strong>+9,119</strong></td>
+                                <td><strong>+175.0%</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="widgets-grid" style="margin-top: 20px;">
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Profit Analysis 2025</div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Gross Profit Margin</div>
+                            <div class="stat-value">21.1<span class="stat-unit">%</span></div>
+                            <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">of Revenue</p>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Operating Profit Margin</div>
+                            <div class="stat-value">6.7<span class="stat-unit">%</span></div>
+                            <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">of Revenue</p>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Net Profit Margin</div>
+                            <div class="stat-value">5.8<span class="stat-unit">%</span></div>
+                            <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">of Revenue</p>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Return on Assets</div>
+                            <div class="stat-value">2.0<span class="stat-unit">%</span></div>
+                            <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">2025</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Key Financial Indicators</div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Revenue Growth</div>
+                            <div class="stat-value">5.3<span class="stat-unit">%</span></div>
+                            <p style="color: var(--success); font-size: 0.8rem; margin-top: 4px;">YoY Increase</p>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Operating Profit Growth</div>
+                            <div class="stat-value">139.8<span class="stat-unit">%</span></div>
+                            <p style="color: var(--success); font-size: 0.8rem; margin-top: 4px;">YoY Increase</p>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Net Profit Growth</div>
+                            <div class="stat-value">175.0<span class="stat-unit">%</span></div>
+                            <p style="color: var(--success); font-size: 0.8rem; margin-top: 4px;">YoY Increase</p>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Government Subsidy</div>
+                            <div class="stat-value">17.2<span class="stat-unit">M</span></div>
+                            <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">in OMR</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- OPERATIONAL PAGE -->
+        <div id="operational" class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Operational Performance</h1>
+                <p class="page-subtitle">Service Quality & Efficiency Indicators</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Electricity Uptime</div>
+                            <div class="kpi-number">99.8%</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">⚡</div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> System Availability</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Water Reliability</div>
+                            <div class="kpi-number">98.7%</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">💧</div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Supply Reliability</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Smart Metering</div>
+                            <div class="kpi-number">100%</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">📊</div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> AMR Penetration</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Environmental</div>
+                            <div class="kpi-number">99.7%</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">🌍</div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Compliance</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-title">Quality Indicators 2025</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">SAIDI</div>
+                        <div class="stat-value">132.53<span class="stat-unit">min</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">SAIFI</div>
+                        <div class="stat-value">1.28<span class="stat-unit">times</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">CAIDI</div>
+                        <div class="stat-value">103.16<span class="stat-unit">min</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">ENS</div>
+                        <div class="stat-value">1,602.97<span class="stat-unit">MWh</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTORS PAGE -->
+        <div id="sectors" class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Sector Performance</h1>
+                <p class="page-subtitle">Electricity, Water & Wastewater Operations</p>
+            </div>
+
+            <div class="widgets-grid">
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Sector Customer Distribution</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="sectorCustomersChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Production & Distribution Performance</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="sectorProductionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Electricity Sector</h3>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Connected</div>
+                            <div class="kpi-number">250K+</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">⚡</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+                    <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Distributed</div>
+                            <div class="kpi-number">8,500<span class="stat-unit">GWh</span></div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">📊</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+                    <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Losses</div>
+                            <div class="kpi-number">7.72%</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">📉</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+                    <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Renewable</div>
+                            <div class="kpi-number">245.47<span class="stat-unit">MWh</span></div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">🌞</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Water Sector</h3>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Customers</div>
+                            <div class="kpi-number">180K+</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">💧</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+                    <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Produced</div>
+                            <div class="kpi-number">76.17M<span class="stat-unit">m³</span></div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">📊</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+                    <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Reliability</div>
+                            <div class="kpi-number">98.7%</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">✅</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+                    <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">AMR Coverage</div>
+                            <div class="kpi-number">90%</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">📱</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Wastewater Sector</h3>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Connected</div>
+                            <div class="kpi-number">61,719</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">🔄</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+                    <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Treated</div>
+                            <div class="kpi-number">23.24M<span class="stat-unit">m³</span></div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">💧</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+                    <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Efficiency</div>
+                            <div class="kpi-number">98%</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">⚙️</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+                    <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Reuse Rate</div>
+                            <div class="kpi-number">47%</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="font-size:1.3rem">♻️</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <div class="widget-header">
+                    <div class="widget-title">Sector Comparison - Key Metrics 2025</div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Electricity</th>
+                                <th>Water</th>
+                                <th>Wastewater</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Connected Customers</strong></td>
+                                <td>250,000+</td>
+                                <td>180,000+</td>
+                                <td>61,719</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Production/Distribution</strong></td>
+                                <td>8,500 GWh</td>
+                                <td>76.17M m³</td>
+                                <td>23.24M m³</td>
+                            </tr>
+                            <tr>
+                                <td><strong>System Reliability</strong></td>
+                                <td>99.5%</td>
+                                <td>98.72%</td>
+                                <td>99.7%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Network Losses/Efficiency</strong></td>
+                                <td>7.72%</td>
+                                <td>37% Non-Revenue Water</td>
+                                <td>98% Efficiency</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Smart Technology</strong></td>
+                                <td>100% AMR Coverage</td>
+                                <td>90% AMR Coverage</td>
+                                <td>Advanced SCADA</td>
+                            </tr>
+                            <tr style="background: rgba(116,67,121,0.03);">
+                                <td><strong>Renewable/Sustainability</strong></td>
+                                <td>245.47 MWh Solar</td>
+                                <td>28 Desalination Plants</td>
+                                <td>11M m³ Recycled</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-section" style="margin-top: 20px;">
+                <h3>Electricity Sector - Advanced Achievements</h3>
+                <div class="table-container" style="margin-top: 15px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Achievement</th>
+                                <th>Value/Status</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>AMR Penetration</strong></td>
+                                <td><span class="badge badge-success">100% Complete</span></td>
+                                <td>All customers on smart metering</td>
+                            </tr>
+                            <tr>
+                                <td><strong>New Capacity Added</strong></td>
+                                <td>100 MVA</td>
+                                <td>SFZ-2 Primary Substation commissioned</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Diesel Elimination</strong></td>
+                                <td><span class="badge badge-success">Achieved</span></td>
+                                <td>Grid interlink completion</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Smart Prepaid System</strong></td>
+                                <td><span class="badge badge-success">Activated</span></td>
+                                <td>Enhanced customer empowerment</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Strategic Investment</strong></td>
+                                <td>OMR 337,000</td>
+                                <td>Emergency & maintenance equipment</td>
+                            </tr>
+                            <tr style="background: rgba(116,67,121,0.03);">
+                                <td><strong>Renewable Energy</strong></td>
+                                <td>245.47 MWh</td>
+                                <td>Solar systems deployed across network</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-section" style="margin-top: 20px;">
+                <h3>Water Sector - Production & Reliability</h3>
+                <div class="widgets-grid">
+                    <div class="widget">
+                        <div class="widget-header">
+                            <div class="widget-title">Water Production Sources</div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-label">RO Plants & Desalination</div>
+                                <div class="stat-value">51.88<span class="stat-unit">M m³</span></div>
+                                <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">68% of total</p>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Groundwater Wells</div>
+                                <div class="stat-value">24.29<span class="stat-unit">M m³</span></div>
+                                <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">32% of total</p>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">System Reliability</div>
+                                <div class="stat-value">98.72<span class="stat-unit">%</span></div>
+                                <p style="color: var(--success); font-size: 0.8rem; margin-top: 4px;">All 12 months exceeded target</p>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Network Extension</div>
+                                <div class="stat-value">28<span class="stat-unit">communities</span></div>
+                                <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">Rural expansion 2025</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget">
+                        <div class="widget-header">
+                            <div class="widget-title">Water Infrastructure Assets</div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-label">Desalination Plants</div>
+                                <div class="stat-value">28</div>
+                                <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">RO facilities operational</p>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Distribution Network</div>
+                                <div class="stat-value">2,772<span class="stat-unit">km</span></div>
+                                <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">Pipeline infrastructure</p>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Production Wells</div>
+                                <div class="stat-value">305</div>
+                                <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">Groundwater extraction</p>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Mobile Units</div>
+                                <div class="stat-value">3</div>
+                                <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">90 m³ capacity each</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section" style="margin-top: 20px;">
+                <h3>Wastewater Sector - Treatment & Sustainability</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Performance Indicator</th>
+                                <th>2025 Achievement</th>
+                                <th>Target/Standard</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Treatment Compliance</strong></td>
+                                <td>99.7%</td>
+                                <td>95%+ Required</td>
+                                <td><span class="badge badge-success">Exceeded</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Treatment Efficiency</strong></td>
+                                <td>98%</td>
+                                <td>95%+ Required</td>
+                                <td><span class="badge badge-success">Exceeded</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Network Coverage</strong></td>
+                                <td>71%</td>
+                                <td>70% Masterplan Target</td>
+                                <td><span class="badge badge-success">On Target</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Reclaimed Water Customers</strong></td>
+                                <td>24</td>
+                                <td>Growing</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Water Recycled</strong></td>
+                                <td>11M m³</td>
+                                <td>Sustainability Goal</td>
+                                <td><span class="badge badge-success">Achieved</span></td>
+                            </tr>
+                            <tr style="background: rgba(116,67,121,0.03);">
+                                <td><strong>Treated Volume</strong></td>
+                                <td>23.24M m³</td>
+                                <td>Annual Capacity</td>
+                                <td><span class="badge badge-success">Operational</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <div class="widget-header">
+                    <div class="widget-title">Sector Performance Summary</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Total Customers Served</div>
+                        <div class="stat-value">491,719+</div>
+                        <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">All three sectors</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Energy Distributed</div>
+                        <div class="stat-value">8,500<span class="stat-unit">GWh</span></div>
+                        <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">Electricity 2025</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Water Produced</div>
+                        <div class="stat-value">76.17<span class="stat-unit">M m³</span></div>
+                        <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">Water 2025</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Wastewater Treated</div>
+                        <div class="stat-value">23.24<span class="stat-unit">M m³</span></div>
+                        <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">With 98% efficiency</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PLANNING PAGE -->
+        <div id="planning" class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Planning & Asset Management</h1>
+                <p class="page-subtitle">Network Development & Asset Portfolio</p>
+            </div>
+
+            <div class="widgets-grid">
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Applications by Service</div>
+                    </div>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="applicationsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Application Distribution</div>
+                    </div>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="applicationsPieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <div class="widget-header">
+                    <div class="widget-title">Application Processing Details 2025</div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Applications</th>
+                                <th>Processing Time</th>
+                                <th>Growth YoY</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Electricity</strong></td>
+                                <td>4,544</td>
+                                <td>1.88 days avg</td>
+                                <td style="color: var(--success);">↑ 12%</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Water</strong></td>
+                                <td>1,263</td>
+                                <td>Fast-track</td>
+                                <td style="color: var(--success);">↑ 8%</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Wastewater</strong></td>
+                                <td>384</td>
+                                <td>Standard</td>
+                                <td style="color: var(--success);">↑ 5%</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr style="background: rgba(116,67,121,0.03);">
+                                <td><strong>Total 2025</strong></td>
+                                <td><strong>6,191</strong></td>
+                                <td><strong>Efficient</strong></td>
+                                <td style="color: var(--success);"><strong>↑ 10%</strong></td>
+                                <td><span class="badge badge-success">Excellent</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="widgets-grid" style="margin-top: 20px;">
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Asset Portfolio Distribution</div>
+                    </div>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="assetPieChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Asset Infrastructure</div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Water Lines</div>
+                            <div class="stat-value">2,772<span class="stat-unit">Km</span></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Plants</div>
+                            <div class="stat-value">28<span class="stat-unit">facilities</span></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Stations</div>
+                            <div class="stat-value">85<span class="stat-unit">pumping</span></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Wells</div>
+                            <div class="stat-value">305</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section" style="margin-top: 20px;">
+                <h3>Electricity Network Planning 2025</h3>
+                <p>During 2025, the Electricity Network Planning Department continued to strengthen service reliability, enhance customer responsiveness, ensure full regulatory compliance, and complete key strategic planning studies to support sustainable network growth across the Dhofar region.</p>
+                
+                <div class="table-container" style="margin-top: 20px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Key Metric</th>
+                                <th>Value</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Connection Applications</strong></td>
+                                <td>4,544</td>
+                                <td><span class="badge badge-success">Processed</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Average Processing Time</strong></td>
+                                <td>1.88 days</td>
+                                <td><span class="badge badge-success">Efficient</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Power Lines</strong></td>
+                                <td>11,797.98 km</td>
+                                <td><span class="badge badge-success">Maintained</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>GIS Survey Complete</strong></td>
+                                <td>100%</td>
+                                <td><span class="badge badge-success">Complete</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Renewable Energy Exported</strong></td>
+                                <td>245 MWh</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr style="background: rgba(116,67,121,0.03);">
+                                <td><strong>SAIDI (System Average Interruption Duration)</strong></td>
+                                <td>132.53 minutes</td>
+                                <td><span class="badge badge-warning">Target: 97 min</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-section" style="margin-top: 20px;">
+                <h3>Water & Wastewater Planning 2025</h3>
+                <p>During 2025, the Water and Wastewater Planning Department achieved strategic milestones that strengthened long-term sector planning, enhanced water resource sustainability, and improved operational readiness in alignment with corporate objectives and development strategies.</p>
+                
+                <div class="table-container" style="margin-top: 20px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Applications</th>
+                                <th>Key Achievement</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Water</strong></td>
+                                <td>1,263</td>
+                                <td>Water Masterplan 90% Complete</td>
+                                <td><span class="badge badge-success">On Track</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Wastewater</strong></td>
+                                <td>384</td>
+                                <td>Wastewater Masterplan 70% Complete</td>
+                                <td><span class="badge badge-success">In Progress</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Investment</strong></td>
+                                <td>-</td>
+                                <td>RO 42M Projects Delivered</td>
+                                <td><span class="badge badge-success">Delivered</span></td>
+                            </tr>
+                            <tr style="background: rgba(116,67,121,0.03);">
+                                <td><strong>Studies</strong></td>
+                                <td>-</td>
+                                <td>3 Strategic Studies Completed</td>
+                                <td><span class="badge badge-success">Complete</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <div class="widget-header">
+                    <div class="widget-title">Network Development Summary</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Power Lines Maintained</div>
+                        <div class="stat-value">11,797.98<span class="stat-unit">km</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">GIS Mapping</div>
+                        <div class="stat-value">100<span class="stat-unit">%</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Infrastructure Investment</div>
+                        <div class="stat-value">RO 42M<span class="stat-unit">Delivered</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Strategic Studies</div>
+                        <div class="stat-value">3<span class="stat-unit">Completed</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RISK PAGE -->
+        <div id="risk" class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Risk Management & Cyber Security</h1>
+                <p class="page-subtitle">Enterprise Risk & Information Security Framework</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Risk Framework</div>
+                            <div class="kpi-number">ISO 31000</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-shield-alt kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom"><div class="kpi-change positive"><i class="fas fa-check"></i> ✓ Implemented</div></div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Data Protection</div>
+                            <div class="kpi-number">ISO 27001</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-lock kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom"><div class="kpi-change positive"><i class="fas fa-check"></i> ✓ Certified</div></div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Major Breaches</div>
+                            <div class="kpi-number">ZERO</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-check-circle kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom"><div class="kpi-change positive"><i class="fas fa-check"></i> 2025 Record</div></div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Security Monitoring</div>
+                            <div class="kpi-number">24/7</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-satellite kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom"><div class="kpi-change positive"><i class="fas fa-check"></i> 24/7 Coverage</div></div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Risk Management & Framework Overview</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Risk Management Framework</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Proactive identification and sustainable service delivery through ISO 31000:2018 standards for strategy & objective achievement</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Digitalization & Automation</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Strategic priority for deployment of smart systems with enhanced efficiency, improved customer experience & data-driven decisions</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Cybersecurity</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Advanced systems & audits protecting IT & OT infrastructure from cyber threats with multi-layered protection</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Compliance & Continuity</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Comprehensive regulatory framework and business continuity management with ISO 22301:2019 compliance</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <div class="widget-header">
+                    <div class="widget-title"><i class="fas fa-project-diagram"></i> Enterprise Risk Management Framework Objectives</div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Objective</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1</strong></td>
+                                <td><strong>Setting Strategy & Achieving Objectives</strong></td>
+                                <td>Align risk management with organizational strategy and business goals</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2</strong></td>
+                                <td><strong>Process Integration</strong></td>
+                                <td>Embed risk management across all business processes and operations</td>
+                            </tr>
+                            <tr>
+                                <td><strong>3</strong></td>
+                                <td><strong>Implementation Guidelines</strong></td>
+                                <td>Establish clear frameworks and methodologies for risk assessment</td>
+                            </tr>
+                            <tr>
+                                <td><strong>4</strong></td>
+                                <td><strong>Event Management</strong></td>
+                                <td>Monitor, identify, and respond to potential risk events</td>
+                            </tr>
+                            <tr>
+                                <td><strong>5</strong></td>
+                                <td><strong>Risk Appetite Alignment</strong></td>
+                                <td>Balance risk exposure with organizational tolerance levels</td>
+                            </tr>
+                            <tr style="background: rgba(116,67,121,0.03);">
+                                <td><strong>6</strong></td>
+                                <td><strong>Stakeholder Trust</strong></td>
+                                <td>Build confidence with investors, customers, and regulators</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <div class="widget-header">
+                    <div class="widget-title"><i class="fas fa-certificate"></i> Compliance & Quality Standards</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item" style="background: linear-gradient(135deg, rgba(116, 67, 121, 0.05), rgba(116, 67, 121, 0.02)); border-left: 4px solid var(--primary); padding: 20px; border-radius: 8px;">
+                        <div class="stat-label">ISO 31000:2018</div>
+                        <p style="color: var(--main-text); margin-top: 8px; font-size: 0.9rem;">Risk Management Framework</p>
+                    </div>
+                    <div class="stat-item" style="background: linear-gradient(135deg, rgba(116, 67, 121, 0.05), rgba(116, 67, 121, 0.02)); border-left: 4px solid var(--primary); padding: 20px; border-radius: 8px;">
+                        <div class="stat-label">ISO 27001:2022</div>
+                        <p style="color: var(--main-text); margin-top: 8px; font-size: 0.9rem;">Data Protection & InfoSec</p>
+                    </div>
+                    <div class="stat-item" style="background: linear-gradient(135deg, rgba(116, 67, 121, 0.05), rgba(116, 67, 121, 0.02)); border-left: 4px solid var(--primary); padding: 20px; border-radius: 8px;">
+                        <div class="stat-label">ISO 22301:2019</div>
+                        <p style="color: var(--main-text); margin-top: 8px; font-size: 0.9rem;">Business Continuity</p>
+                    </div>
+                    <div class="stat-item" style="background: linear-gradient(135deg, rgba(116, 67, 121, 0.05), rgba(116, 67, 121, 0.02)); border-left: 4px solid var(--primary); padding: 20px; border-radius: 8px;">
+                        <div class="stat-label">PDPL Oman</div>
+                        <p style="color: var(--main-text); margin-top: 8px; font-size: 0.9rem;">Data Privacy Law Compliance</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section" style="margin-top: 20px;">
+                <h3>CIA Triad - Core Cybersecurity Principles</h3>
+                <p>Maintaining Confidentiality, Integrity & Availability of Digital Information</p>
+                
+                <div class="table-container" style="margin-top: 20px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Principle</th>
+                                <th>Description</th>
+                                <th>Key Focus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>🔒 Confidentiality</strong></td>
+                                <td>Protecting sensitive data from unauthorized access and ensuring privacy of organizational and customer information</td>
+                                <td><span class="badge badge-success">Data Protection</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>✔️ Integrity</strong></td>
+                                <td>Ensuring accuracy and consistency of data, preventing unauthorized modifications and maintaining data reliability</td>
+                                <td><span class="badge badge-success">Data Accuracy</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>⚡ Availability</strong></td>
+                                <td>Guaranteeing continuous access to systems and data, ensuring uninterrupted service delivery and supply reliability</td>
+                                <td><span class="badge badge-success">Guaranteed Supply</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-section" style="margin-top: 20px;">
+                <h3>Strategic Security & Operational Pillars</h3>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">🛡️ Strategies & Advanced Audits</div>
+                        <ul style="color: var(--main-text); margin-top: 12px; padding-left: 20px;">
+                            <li>✓ Proactive Threat Detection</li>
+                            <li>✓ Regular Security Audits</li>
+                            <li>✓ Strategic Security Planning</li>
+                            <li>✓ Compliance Verification</li>
+                        </ul>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">🌐 Critical Infrastructure Protection</div>
+                        <ul style="color: var(--main-text); margin-top: 12px; padding-left: 20px;">
+                            <li>✓ IT & OT System Safeguarding</li>
+                            <li>✓ Network Threat Prevention</li>
+                            <li>✓ Guaranteed Supply Reliability</li>
+                            <li>✓ Outage Mitigation</li>
+                        </ul>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">⭐ Best Service Provider Vision</div>
+                        <ul style="color: var(--main-text); margin-top: 12px; padding-left: 20px;">
+                            <li>✓ Service Reliability Assurance</li>
+                            <li>✓ Customer Confidence Building</li>
+                            <li>✓ Sustainable Growth</li>
+                            <li>✓ Market Leadership Position</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <div class="widget-header">
+                    <div class="widget-title"><i class="fas fa-star"></i> Advanced Cybersecurity Systems & Stakeholder Trust</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-bottom: 12px;">01</div>
+                        <div class="stat-label">Advanced Systems</div>
+                        <p style="color: var(--main-text); margin-top: 8px; font-size: 0.9rem;">Cutting-edge cybersecurity technologies deployed to detect, prevent, and respond to sophisticated threats in real-time</p>
+                    </div>
+                    <div class="stat-item">
+                        <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-bottom: 12px;">02</div>
+                        <div class="stat-label">Continuous Audits</div>
+                        <p style="color: var(--main-text); margin-top: 8px; font-size: 0.9rem;">Regular security assessments and compliance audits ensuring adherence to international standards and best practices</p>
+                    </div>
+                    <div class="stat-item">
+                        <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-bottom: 12px;">03</div>
+                        <div class="stat-label">Strategic Approach</div>
+                        <p style="color: var(--main-text); margin-top: 8px; font-size: 0.9rem;">Comprehensive security strategy aligned with business objectives, reducing threat scope and organizational risks</p>
+                    </div>
+                    <div class="stat-item">
+                        <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-bottom: 12px;">04</div>
+                        <div class="stat-label">Stakeholder Trust</div>
+                        <p style="color: var(--main-text); margin-top: 8px; font-size: 0.9rem;">Building confidence with investors, customers, and regulators through transparent security practices and reliability</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RDI PAGE -->
+        <div id="rdi" class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Research, Development & Innovation</h1>
+                <p class="page-subtitle">2025 RDI Achievements & Strategic Initiatives</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">RDI Projects</div>
+                            <div class="kpi-number">12</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-flask kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom"><div class="kpi-change positive"><i class="fas fa-check"></i> Under Implementation</div></div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Feasibility Studies</div>
+                            <div class="kpi-number">12</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-book kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom"><div class="kpi-change positive"><i class="fas fa-check"></i> Funded</div></div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Strategic Partnerships</div>
+                            <div class="kpi-number">12</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-handshake kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom"><div class="kpi-change positive"><i class="fas fa-check"></i> VDP Agreements</div></div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Vision 2040</div>
+                            <div class="kpi-number">Top 20</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-rocket kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom"><div class="kpi-change positive"><i class="fas fa-check"></i> Innovation Goals</div></div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%"></div></div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>BTM & RDI Projects</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Business Technology Management</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">✓ Business Technology Study Completed</p>
+                        <p style="color: var(--main-text); margin-top: 4px;">✓ Partnerships with Sultan Qaboos University & German University</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Feasibility Studies</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">✓ 12 RDI Project Feasibility Studies Funded</p>
+                        <p style="color: var(--main-text); margin-top: 4px;">✓ Strategic Planning & Innovation Framework</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Project Implementation</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">✓ Completed RDI Projects with Nizwa University</p>
+                        <p style="color: var(--main-text); margin-top: 4px;">✓ 12 Projects Under Implementation</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Academic Partnerships</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">✓ Collaborations with Multiple Universities</p>
+                        <p style="color: var(--main-text); margin-top: 4px;">✓ Effective Strategic Partnerships</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section" style="margin-top: 20px;">
+                <h3>EJAAD Platform & Innovation</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Platform Utilization</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">✓ Leveraging EJAAD Innovation Platform</p>
+                        <p style="color: var(--main-text); margin-top: 4px;">✓ Access to Research Centers & Universities</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">R&D Projects</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">✓ Implementation of Distinguished R&D Projects</p>
+                        <p style="color: var(--main-text); margin-top: 4px;">✓ Technology-Driven Solutions</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">International Innovation</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">✓ Wetskills Water Challenge Participation</p>
+                        <p style="color: var(--main-text); margin-top: 4px;">✓ Innovative Water Sector Solutions</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Development Opportunities</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">✓ New Innovation Initiatives</p>
+                        <p style="color: var(--main-text); margin-top: 4px;">✓ Capacity Building Programs</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <div class="widget-header">
+                    <div class="widget-title">SME Development & Incubation Programs</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">SME Framework</div>
+                        <div class="stat-value">Active<span class="stat-unit">Framework</span></div>
+                        <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">Support for Small Businesses</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Riyada Partnership</div>
+                        <div class="stat-value">Implemented<span class="stat-unit">Program</span></div>
+                        <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">Entrepreneurship Support</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Training Programs</div>
+                        <div class="stat-value">Multiple<span class="stat-unit">Initiatives</span></div>
+                        <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">Skills Development</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Incubation Support</div>
+                        <div class="stat-value">Active<span class="stat-unit">Ecosystem</span></div>
+                        <p style="color: var(--main-muted); font-size: 0.8rem; margin-top: 4px;">Innovation Nurturing</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <div class="widget-header">
+                    <div class="widget-title">Vendor Development Program (VDP)</div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Initiative</th>
+                                <th>Details</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>VDP Program Launch</strong></td>
+                                <td>Organized Vendor Development Program</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Strategic Partnerships</strong></td>
+                                <td>12 Partnership Agreements Signed</td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Skills Training</strong></td>
+                                <td>Training & Certification Programs for SMEs</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr style="background: rgba(116,67,121,0.03);">
+                                <td><strong>Capability Enhancement</strong></td>
+                                <td>Skills Development to Improve Vendor Capacity</td>
+                                <td><span class="badge badge-success">Ongoing</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-section" style="margin-top: 20px;">
+                <h3>Future Vision - Oman Vision 2040</h3>
+                <p style="background: linear-gradient(135deg, #f5f5f5, #e8e8e8); padding: 20px; border-radius: 10px; border-left: 5px solid var(--primary);">
+                    <strong>Strategic Goal:</strong> Make Oman one of the Top 20 Most Innovative Countries by 2040. 
+                    Through strategic partnerships, collaborative initiatives, and fostering an innovation ecosystem, we are building a sustainable foundation for technological advancement and research-driven development across all sectors.
+                </p>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <div class="widget-header">
+                    <div class="widget-title">Supporting Organizations & Partners</div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; padding: 20px 0;">
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #e9ecef;">
+                        <div style="font-size: 2em; margin-bottom: 10px;">🏛️</div>
+                        <div style="font-weight: 600; color: var(--primary);">Sultan Qaboos University</div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #e9ecef;">
+                        <div style="font-size: 2em; margin-bottom: 10px;">🌐</div>
+                        <div style="font-weight: 600; color: var(--primary);">EJAAD Platform</div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #e9ecef;">
+                        <div style="font-size: 2em; margin-bottom: 10px;">💧</div>
+                        <div style="font-weight: 600; color: var(--primary);">Wetskills Challenge</div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #e9ecef;">
+                        <div style="font-size: 2em; margin-bottom: 10px;">🚀</div>
+                        <div style="font-weight: 600; color: var(--primary);">Riyada Authority</div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #e9ecef;">
+                        <div style="font-size: 2em; margin-bottom: 10px;">📈</div>
+                        <div style="font-weight: 600; color: var(--primary);">NAMA Dhofar</div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #e9ecef;">
+                        <div style="font-size: 2em; margin-bottom: 10px;">🤝</div>
+                        <div style="font-weight: 600; color: var(--primary);">Partner Universities</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ICV PAGE -->
+        <div id="icv" class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">In-Country Value (ICV)</h1>
+                <p class="page-subtitle">Nama Dhofar Services 2025 - Strategic Summary</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Omanisation Rate</div>
+                            <div class="kpi-number">97%</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-people-group kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> 596 Full-Time Omani Employees</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">New Job Opportunities</div>
+                            <div class="kpi-number">467</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-briefcase kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Long-term O&M Contracts 2025</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Capital Project Jobs</div>
+                            <div class="kpi-number">163</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-hammer kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Water & Wastewater Sectors</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div>
+                            <div class="kpi-label">Capital Investment</div>
+                            <div class="kpi-number">RO 135M+</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fas fa-building kpi-icon"></i></div>
+                    </div>
+                    <div class="kpi-card-bottom">
+                        <div class="kpi-change positive"><i class="fas fa-arrow-trend-up"></i> Infrastructure Development</div>
+                    </div>
+                    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:80%"></div></div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Workforce Development</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Omanisation Achievement</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Achieved 97% Omanisation rate with 596 full-time employees, demonstrating commitment to national workforce development.</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Leadership Program</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Launched Takween Leadership Development Program targeting middle management and future leaders.</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Training Initiatives</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Comprehensive training in technical expertise and behavioral competencies across all levels.</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Job Creation</div>
+                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--primary); margin: 10px 0;">630+</div>
+                        <p style="color: var(--main-text);">Combined employment opportunities across all sectors in 2025.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <div class="widget-header">
+                    <div class="widget-title">Capital Investment Strategy</div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Sector</th>
+                                <th>Investment Amount</th>
+                                <th>Period</th>
+                                <th>Key Focus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>⚡ Electricity</strong></td>
+                                <td>RO 72.7M</td>
+                                <td>2026-2029</td>
+                                <td>Distribution network enhancement & customer connections</td>
+                            </tr>
+                            <tr>
+                                <td><strong>💧 Water</strong></td>
+                                <td>RO 63M</td>
+                                <td>2024-2026</td>
+                                <td>Distribution expansion, new wells & desalination</td>
+                            </tr>
+                            <tr style="background: rgba(116,67,121,0.03);">
+                                <td><strong>💰 Total</strong></td>
+                                <td><strong>RO 135.7M</strong></td>
+                                <td><strong>2024-2029</strong></td>
+                                <td><strong>Comprehensive infrastructure modernization</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-section" style="margin-top: 20px;">
+                <h3>Local Procurement & Supply Chain</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Local Sourcing</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Prioritize Omani contractors and suppliers through transparent and competitive tendering.</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Business Opportunities</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Equitable participation in capital projects and operational contracts for local businesses.</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Economic Multiplier</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Local suppliers hire local workers and reinvest within communities.</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Supplier Development</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Training and quality standards support for long-term partnerships.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section" style="margin-top: 20px;">
+                <h3>Community & Social Impact</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Initiative</th>
+                                <th>Description</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1. Sponsorship</strong></td>
+                                <td>Sponsored Dhofar Festival 2025 and national community initiatives</td>
+                                <td>Community visibility & support</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2. Education Support</strong></td>
+                                <td>Supported educational institutions and capacity-building programs</td>
+                                <td>Youth development & skills</td>
+                            </tr>
+                            <tr>
+                                <td><strong>3. Communication</strong></td>
+                                <td>Generated 293 news items and 690 social media posts</td>
+                                <td>Enhanced brand presence</td>
+                            </tr>
+                            <tr style="background: rgba(116,67,121,0.03);">
+                                <td><strong>4. Value Creation</strong></td>
+                                <td>Multifaceted social responsibility across economic, educational, and cultural dimensions</td>
+                                <td>Comprehensive community impact</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-section" style="margin-top: 20px;">
+                <h3>Forward-Looking Strategy 2026+</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Workforce Excellence</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Advanced training programs and skills certification for cutting-edge expertise.</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Procurement Expansion</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Identify and nurture Omani suppliers for increasingly complex projects.</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Infrastructure Growth</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Sustained capital investment supporting sustainable economic development.</p>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Community Partnership</div>
+                        <p style="color: var(--main-muted); margin-top: 8px; font-size:0.82rem;">Deepened engagement through expanded social responsibility programs.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <div class="widget-header">
+                    <div class="widget-title">2026-2030 Strategic Targets</div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Goal</th>
+                                <th>Target</th>
+                                <th>Timeline</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Local Procurement</strong></td>
+                                <td>70%</td>
+                                <td>by 2026</td>
+                                <td><span class="badge badge-success">On Track</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Technical Omanization</strong></td>
+                                <td>90%</td>
+                                <td>by 2027</td>
+                                <td><span class="badge badge-success">On Track</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Skills Development</strong></td>
+                                <td>500+ Trained</td>
+                                <td>by 2028</td>
+                                <td><span class="badge badge-success">In Progress</span></td>
+                            </tr>
+                            <tr style="background: rgba(116,67,121,0.03);">
+                                <td><strong>Local Spending</strong></td>
+                                <td>RO 200M+</td>
+                                <td>by 2030</td>
+                                <td><span class="badge badge-warning">Planned</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let chartInstances = {};
+
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Update nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.closest('.nav-link').classList.add('active');
+
+            // Initialize charts for pages that need them
+            setTimeout(() => {
+                if (['dashboard', 'planning', 'sectors', 'financial'].includes(pageId)) {
+                    initCharts();
+                }
+            }, 100);
+
+            // Scroll to top
+            document.querySelector('.main').scrollTop = 0;
+        }
+
+        function initCharts() {
+            const revenueCtx = document.getElementById('revenueChart');
+            if (revenueCtx && !chartInstances.revenue) {
+                chartInstances.revenue = new Chart(revenueCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'Revenue (RO Million)',
+                            data: [18, 19, 20, 19, 21, 22, 20, 21, 23, 22, 24, 25],
+                            borderColor: '#744379',
+                            backgroundColor: 'rgba(116, 67, 121, 0.08)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#744379',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: false, min: 15, grid: { color: 'rgba(0, 0, 0, 0.05)' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Applications Chart - Planning
+            const applicationsCtx = document.getElementById('applicationsChart');
+            if (applicationsCtx && !chartInstances.applications) {
+                chartInstances.applications = new Chart(applicationsCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Electricity', 'Water', 'Wastewater'],
+                        datasets: [{
+                            label: 'Applications Received',
+                            data: [4544, 1263, 384],
+                            backgroundColor: ['#744379', '#a380a8', '#d4b5d4'],
+                            borderColor: ['#744379', '#a380a8', '#d4b5d4'],
+                            borderWidth: 2,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Applications Pie
+            const applicationsPieCtx = document.getElementById('applicationsPieChart');
+            if (applicationsPieCtx && !chartInstances.applicationsPie) {
+                chartInstances.applicationsPie = new Chart(applicationsPieCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Electricity', 'Water', 'Wastewater'],
+                        datasets: [{
+                            data: [4544, 1263, 384],
+                            backgroundColor: ['#744379', '#a380a8', '#d4b5d4'],
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { padding: 20 } } }
+                    }
+                });
+            }
+
+            // Asset Distribution Pie
+            const assetPieCtx = document.getElementById('assetPieChart');
+            if (assetPieCtx && !chartInstances.assetPie) {
+                chartInstances.assetPie = new Chart(assetPieCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Water Lines (45%)', 'Wells (25%)', 'Stations (20%)', 'Plants (10%)'],
+                        datasets: [{
+                            data: [45, 25, 20, 10],
+                            backgroundColor: ['#744379', '#a380a8', '#6366f1', '#d4b5d4'],
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { padding: 20 } } }
+                    }
+                });
+            }
+
+            // Sector Customers Bar
+            const sectorCtx = document.getElementById('sectorCustomersChart');
+            if (sectorCtx && !chartInstances.sectorCustomers) {
+                chartInstances.sectorCustomers = new Chart(sectorCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Electricity', 'Water', 'Wastewater'],
+                        datasets: [{
+                            label: 'Customers (Thousands)',
+                            data: [250, 180, 61.7],
+                            backgroundColor: ['#744379', '#6366f1', '#a380a8'],
+                            borderColor: ['#744379', '#6366f1', '#a380a8'],
+                            borderWidth: 2,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Sector Production Radar
+            const productionCtx = document.getElementById('sectorProductionChart');
+            if (productionCtx && !chartInstances.sectorProduction) {
+                chartInstances.sectorProduction = new Chart(productionCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Uptime %', 'Efficiency %', 'Reliability %', 'Coverage %', 'Growth %'],
+                        datasets: [
+                            {
+                                label: 'Electricity',
+                                data: [99.8, 92, 99.8, 95, 2.3],
+                                borderColor: '#744379',
+                                backgroundColor: 'rgba(116, 67, 121, 0.1)',
+                                borderWidth: 2,
+                                pointBackgroundColor: '#744379'
+                            },
+                            {
+                                label: 'Water',
+                                data: [98.7, 95, 98.7, 90, 3.0],
+                                borderColor: '#6366f1',
+                                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                borderWidth: 2,
+                                pointBackgroundColor: '#6366f1'
+                            },
+                            {
+                                label: 'Wastewater',
+                                data: [98, 98, 97, 71, 2.1],
+                                borderColor: '#a380a8',
+                                backgroundColor: 'rgba(163, 128, 168, 0.1)',
+                                borderWidth: 2,
+                                pointBackgroundColor: '#a380a8'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { padding: 20 } } },
+                        scales: { r: { beginAtZero: true, max: 100 } }
+                    }
+                });
+            }
+
+            // Financial Trend
+            const financialCtx = document.getElementById('financialChart');
+            if (financialCtx && !chartInstances.financial) {
+                chartInstances.financial = new Chart(financialCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['2023', '2024', '2025'],
+                        datasets: [
+                            {
+                                label: 'Revenue',
+                                data: [220, 235, 246],
+                                borderColor: '#744379',
+                                backgroundColor: 'rgba(116, 67, 121, 0.08)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 6,
+                                pointBackgroundColor: '#744379'
+                            },
+                            {
+                                label: 'Net Profit',
+                                data: [3, 5, 23],
+                                borderColor: '#6366f1',
+                                backgroundColor: 'rgba(99, 102, 241, 0.08)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 6,
+                                pointBackgroundColor: '#6366f1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'top', labels: { padding: 20 } } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Financial Revenue Composition
+            const financialPieCtx = document.getElementById('financialPieChart');
+            if (financialPieCtx && !chartInstances.financialPie) {
+                chartInstances.financialPie = new Chart(financialPieCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Tariff Revenue (58%)', 'Government Subsidy (42%)'],
+                        datasets: [{
+                            data: [142, 104],
+                            backgroundColor: ['#744379', '#a380a8'],
+                            borderColor: ['#744379', '#a380a8'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { padding: 20 } } }
+                    }
+                });
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initCharts();
+        });
+    </script>
+</body>
+</html>
